@@ -34,6 +34,7 @@ namespace LemondropsCafe.Data
         public DbSet<Menu> Menus { get; set; }
         public DbSet<MenuItem> MenuItems { get; set; }
         public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderDetail> OrderDetails { get; set; }
         public DbSet<OrderMenuItem> OrderMenuItems { get; set; }
         public DbSet<User> Users { get; set; }
     }

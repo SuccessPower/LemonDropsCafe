@@ -4,6 +4,7 @@ using System.Linq;
 using LemondropsCafe.Models;
 using System;
 using LemondropsCafe.Data.Enum;
+using Microsoft.EntityFrameworkCore;
 
 namespace LemondropsCafe.Data
 {
@@ -71,6 +72,7 @@ namespace LemondropsCafe.Data
                     context.SaveChanges();
                 }
 
+
                 // Order seeding
                 if (!context.Orders.Any())
                 {
@@ -82,11 +84,14 @@ namespace LemondropsCafe.Data
                         new Order { OrderDate = DateTime.Now, User = users[1] },
                         new Order { OrderDate = DateTime.Now, User = users[2] },
                         new Order { OrderDate = DateTime.Now, User = users[3] }
-                        // Add more orders as needed
+                    // Add more orders as needed
                     );
 
                     context.SaveChanges();
                 }
+
+                // Eagerly load the User property when querying the Orders
+                var ordersWithUsers = context.Orders.Include(o => o.User).ToList();
 
                 // OrderMenuItem seeding
                 if (!context.OrderMenuItems.Any())
@@ -109,7 +114,71 @@ namespace LemondropsCafe.Data
 
                     context.SaveChanges();
                 }
+
+                // OrderDetail seeding
+                if (!context.OrderDetails.Any())
+                {
+                    context.OrderDetails.AddRange(
+                        new OrderDetail
+                        {
+                            OrderId = ordersWithUsers[0].OrderId,
+                            OrderNumber = GenerateOrderNumber(),
+                            Name = ordersWithUsers[0].User.Name,
+                            TelephoneNumber = ordersWithUsers[0].User.PhoneNumber,
+                            TotalAmount = CalculateTotalAmount(ordersWithUsers[0])
+                        },
+                        new OrderDetail
+                        {
+                            OrderId = ordersWithUsers[1].OrderId,
+                            OrderNumber = GenerateOrderNumber(),
+                            Name = ordersWithUsers[1].User.Name,
+                            TelephoneNumber = ordersWithUsers[1].User.PhoneNumber,
+                            TotalAmount = CalculateTotalAmount(ordersWithUsers[1])
+                        },
+                        new OrderDetail
+                        {
+                            OrderId = ordersWithUsers[2].OrderId,
+                            OrderNumber = GenerateOrderNumber(),
+                            Name = ordersWithUsers[2].User.Name,
+                            TelephoneNumber = ordersWithUsers[2].User.PhoneNumber,
+                            TotalAmount = CalculateTotalAmount(ordersWithUsers[2])
+                        },
+                        new OrderDetail
+                        {
+                            OrderId = ordersWithUsers[3].OrderId,
+                            OrderNumber = GenerateOrderNumber(),
+                            Name = ordersWithUsers[3].User.Name,
+                            TelephoneNumber = ordersWithUsers[3].User.PhoneNumber,
+                            TotalAmount = CalculateTotalAmount(ordersWithUsers[3])
+                        }
+                    // Add more order details as needed
+                    );
+
+                    context.SaveChanges();
+                }
             }
         }
+
+        private static string GenerateOrderNumber()
+        {
+            // For simplicity, we will use a combination of timestamp and random number to generate the order number.
+            var timestamp = DateTime.Now.Ticks.ToString();
+            var random = new Random().Next(1000, 9999).ToString();
+            return "ORD-" + timestamp + "-" + random;
+        }
+
+        private static decimal CalculateTotalAmount(Order order)
+        {
+            // Calculate the total amount for an order by summing up the prices of all ordered items.
+            decimal totalAmount = 0;
+
+            foreach (var orderMenuItem in order.OrderMenuItems)
+            {
+                totalAmount += orderMenuItem.MenuItem.Price;
+            }
+
+            return totalAmount;
+        }
+
     }
 }
