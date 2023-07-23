@@ -1,4 +1,7 @@
 using LemondropsCafe.Data;
+using LemondropsCafe.Data.Base;
+using LemondropsCafe.Data.Services;
+using LemondropsCafe.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -28,6 +31,9 @@ namespace LemondropsCafe
             // DbContext Configuration
             services.AddDbContext<AppDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString
                 ("DefaultConnectionString")));
+
+            // Service Configuration
+            services.AddScoped<MenuItemsService>();
 
             services.AddControllersWithViews();
         }

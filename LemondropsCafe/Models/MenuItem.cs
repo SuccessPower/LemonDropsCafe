@@ -1,11 +1,12 @@
-﻿using LemondropsCafe.Data.Enum;
+﻿using LemondropsCafe.Data.Base;
+using LemondropsCafe.Data.Enum;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace LemondropsCafe.Models
 {
-    public class MenuItem
+    public class MenuItem : IEntityBase
     {
         [Key]
         public int MenuItemId { get; set; }
